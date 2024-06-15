@@ -1,0 +1,90 @@
+services:
+  web:
+    image: httpd:2.4-bookworm
+    restart: unless-stopped
+    container_name: bx_${COMPOSE_PROJECT_NAME:-docker}_web
+    volumes:
+      - ./src:/var/www/html
+      - ./conf/httpd/sites:/usr/local/apache2/conf/sites
+      - ./certs/web:/etc/certs
+      - type: bind
+        source: ./conf/httpd/httpd.conf
+        target: /usr/local/apache2/conf/httpd.conf
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - php
+    networks:
+      bx:
+        ipv4_address: ${COMPOSE_SUBNET:-172.25.0}.2
+        aliases:
+          - ${WEBSITE_DOMAIN_1:-bx1.local}
+          - ${WEBSITE_DOMAIN_2:-bx2.local}
+          - ${WEBSITE_DOMAIN_3:-bx3.local}
+          - ${WEBSITE_DOMAIN_4:-bx4.local}
+          - ${WEBSITE_DOMAIN_5:-bx5.local}
+          - ${WEBSITE_DOMAIN_6:-bx6.local}
+          - ${WEBSITE_DOMAIN_7:-bx7.local}
+          - ${WEBSITE_DOMAIN_8:-bx8.local}
+          - ${WEBSITE_DOMAIN_9:-bx9.local}
+          - ${WEBSITE_DOMAIN_10:-bx10.local}
+  php:
+    build: ./php${PHP_VERSION}
+    restart: unless-stopped
+    container_name: bx_${COMPOSE_PROJECT_NAME:-docker}_php${PHP_VERSION}
+    environment:
+      - COMPOSE_SUBNET=${COMPOSE_SUBNET:-172.25.0}
+      - XDEBUG_ENABLE=${XDEBUG_ENABLE:-false}
+      - XDEBUG_PORT=${XDEBUG_PORT:-9003}
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - db
+    networks:
+      bx:
+        ipv4_address: ${COMPOSE_SUBNET:-172.25.0}.3
+  db:
+    image: mysql:5.7
+    restart: unless-stopped
+    container_name: bx_${COMPOSE_PROJECT_NAME:-docker}_db
+    command: mysqld --sql_mode='' --character-set-server=utf8 --collation-server=utf8_unicode_ci
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "3306:3306"
+    networks:
+      bx:
+        ipv4_address: ${COMPOSE_SUBNET:-172.25.0}.4
+  # will be added after move to taskfiles
+  # memcached:
+  #   image: bitnami/memcached:latest
+  #   restart: unless-stopped
+  #   container_name: bx_${COMPOSE_PROJECT_NAME:-docker}_memcached
+  #   environment:
+  #     - MEMCACHED_CACHE_SIZE=${MEMCACHED_CACHE_SIZE:-256}
+  #   networks:
+  #     bx:
+  #       ipv4_address: ${COMPOSE_SUBNET:-172.25.0}.5
+  # redis:
+  #   image: redis:7
+  #   restart: unless-stopped
+  #   container_name: bx_${COMPOSE_PROJECT_NAME:-docker}_redis
+  #   networks:
+  #     bx:
+  #       ipv4_address: ${COMPOSE_SUBNET:-172.25.0}.6
+
+volumes:
+  db:
+networks:
+  bx:
+    ipam:
+      driver: default
+      config:
+        - subnet: ${COMPOSE_SUBNET:-172.25.0}.0/24
+          gateway: ${COMPOSE_SUBNET:-172.25.0}.1
