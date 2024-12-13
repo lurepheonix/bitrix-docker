@@ -10,33 +10,32 @@ RUN apt update && \
     apt update && \
     apt upgrade && \
     apt install -y php8.1 \
-    php8.1-apcu \
-    php8.1-bcmath \
-    php8.1-bz2 \
-    php8.1-curl \
-    php8.1-ds \
-    php8.1-fpm \
-    php8.1-gd \
-    php8.1-gmp \
-    php8.1-imagick \
-    php8.1-intl \
-    php8.1-ldap \
-    php8.1-lz4 \
-    php8.1-maxminddb \
-    php8.1-mbstring \
-    php8.1-memcache \
-    php8.1-mcrypt \
-    php8.1-mysql \
-    php8.1-opcache \
-    php8.1-readline \
-    php8.1-redis \
-    php8.1-soap \
-    php8.1-tidy \
-    php8.1-uuid \
-    php8.1-vips \
-    php8.1-xdebug \
-    php8.1-xml \
-    php8.1-zip \
+    php8.3-apcu \
+    php8.3-bcmath \
+    php8.3-bz2 \
+    php8.3-curl \
+    php8.3-ds \
+    php8.3-fpm \
+    php8.3-gd \
+    php8.3-gmp \
+    php8.3-imagick \
+    php8.3-intl \
+    php8.3-ldap \
+    php8.3-maxminddb \
+    php8.3-mbstring \
+    php8.3-memcache \
+    php8.3-mcrypt \
+    php8.3-mysql \
+    php8.3-opcache \
+    php8.3-readline \
+    php8.3-redis \
+    php8.3-soap \
+    php8.3-tidy \
+    php8.3-uuid \
+    php8.3-vips \
+    php8.3-xdebug \
+    php8.3-xml \
+    php8.3-zip \
     && \
     wget -O /usr/bin/composer https://github.com/composer/composer/releases/latest/download/composer.phar && \
     chmod +x /usr/bin/composer && \
@@ -48,9 +47,9 @@ COPY ./certs/*.pem /usr/local/share/ca-certificates/
 RUN update-ca-certificates
 RUN echo "* * * * * www-data php -f /var/www/html/bitrix/modules/main/tools/cron_events.php" >> /etc/crontab
 
-COPY ./conf/50-settings.ini /etc/php/8.1/cli/conf.d/50-settings.ini
-COPY ./conf/50-settings.ini /etc/php/8.1/fpm/conf.d/50-settings.ini
-COPY ./conf/php-fpm.conf /etc/php/8.1/fpm/php-fpm.conf
+COPY ./conf/50-settings.ini /etc/php/8.3/cli/conf.d/50-settings.ini
+COPY ./conf/50-settings.ini /etc/php/8.3/fpm/conf.d/50-settings.ini
+COPY ./conf/php-fpm.conf /etc/php/8.3/fpm/php-fpm.conf
 COPY ./entrypoint.sh /run/entrypoint.sh
 
 ENTRYPOINT [ "/run/entrypoint.sh" ]
