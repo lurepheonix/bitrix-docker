@@ -2,13 +2,15 @@
 
 .env
 *.bak
+.task/
 **/certs/*
-!**/certs/.gitkeep
+!**/certs/**/.gitkeep
 *.code-workspace
+backups/
 conf/httpd/sites/*.conf
 !conf/httpd/sites/example.conf
 src/
-src.*/
+src*/
 
 # Created by https://www.toptal.com/developers/gitignore/api/archives,windows,macos,linux
 # Edit at https://www.toptal.com/developers/gitignore?templates=archives,windows,macos,linux
@@ -134,3 +136,4 @@ $RECYCLE.BIN/
 *.sql
 
 # End of https://www.toptal.com/developers/gitignore/api/database
+
