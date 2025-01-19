@@ -4,6 +4,9 @@
 
     DocumentRoot /var/www/html
 
+    SSLCertificateFile /etc/certs/cert.pem
+    SSLCertificateKeyFile /etc/certs/key.pem
+
     # CORS: always allow for development
     Header set Access-Control-Allow-Origin "*"
 
