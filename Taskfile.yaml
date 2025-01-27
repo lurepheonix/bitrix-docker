@@ -53,3 +53,31 @@ tasks:
       - docker compose exec -T db /usr/bin/mysql
         -u {{.MYSQL_USER}} --password="{{.MYSQL_PASSWORD}}" "{{.MYSQL_DATABASE}}" 
         -e "UPDATE b_lang SET DOC_ROOT='{{.DOCROOT}}' WHERE LID='{{.SITE_ID}}'"
+  php-bash:
+    desc: Enter PHP container with Bash 
+    cmds:
+      - docker compose exec -it php /bin/bash
+  clear-cache: 
+    desc: Clears bitrix cache
+    cmds:
+      - sudo rm -rf {{.BX_DIR | default "src"}}/bitrix/cache
+      - sudo rm -rf {{.BX_DIR | default "src"}}/bitrix/managed_cache
+  change-installation-id:
+    desc: Change installation ID. Replace admin_passwordh and TEMPORARY_CACHE.
+    cmds:
+      - |
+        if [[ -z "{{.ADMIN_PASSWORDH_VALUE}}" ]]; then
+          echo "Error: ADMIN_PASSWORDH_VALUE variable is required for extend-trial task."
+          exit 1
+        fi
+      - |
+        if [[ -z "{{.TEMPORARY_CACHE_VALUE}}" ]]; then
+          echo "Error: TEMPORARY_CACHE_VALUE variable is required for extend-trial task."
+          exit 1
+        fi
+      - source {{.ENV_FILE}}
+      - docker compose exec -T db /usr/bin/mysql
+        -u {{.MYSQL_USER}} --password="{{.MYSQL_PASSWORD}}" "{{.MYSQL_DATABASE}}" 
+        -e "UPDATE b_option SET VALUE='{{.ADMIN_PASSWORDH_VALUE}}' WHERE NAME='admin_passwordh'"
+      - echo '<?define("TEMPORARY_CACHE", "{{.TEMPORARY_CACHE_VALUE}}");?>' | sudo tee {{.BX_DIR | default "src"}}/bitrix/modules/main/admin/define.php > /dev/null
+      - task: clear-cache
